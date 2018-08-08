@@ -1,0 +1,10 @@
+DEFAULT cCampos := '#'
+DEFAULT cTabla := 'VEND'
+SI cCampos='#'
+   MENSAJITO 'No hay parametros'
+ELSE
+  SQL SELECT [[ccampos]] FROM M_[[cTabla]] /*CURSOR*/
+  WEBREPORT 'DEFAULT.REP' HEADER "BI2\FORMAS\HEADFULL.HTM"
+FINSI  
+TERMINA
+
