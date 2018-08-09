@@ -1,0 +1,23 @@
+#INCLUDE cgi-bwp\ec\ec.lib
+DEFAULT XQUERY := '*'
+IF XQUERY#'*'
+   CW:LISTA()
+   TERMINA
+ENDIF   
+HTMLBEGIN
+<br><br>
+      <div class="input-group">
+      <input type="text" class="form-control" id="precios" placeholder="Buscar  ej: Tsuru              " name="xQuery" onchange="Ajax('/cgi-bwp/ec/precios.bwp?xquery='+this.value,'ListaPrecios')">
+      </div>
+    <span id=ListaPrecios></span>
+HTMLEND
+termina
+FUNCTION LISTA()
+xQuery:=UPPER(ALLTRIM(xQUERY))
+SQL SELECT a.PRODUCTO,sustituto,a.desc1 AS CWDESC,b.nombre as Marca,C.NOMBRE AS LINEA,d.Nombre as Sistema,a.unidad,a.PRECIO[[CPRECIO]] as PRECIO,ESTATUS,ESTADOPROD ;
+      FROM M_PROD A inner join m_MARK B on a.marka=b.MARKA INNER JOIN M_LINE C ON A.LINEA=C.LINEA inner join m_cate D on c.categoria=d.categoria ;
+     WHERE a.DESC1+b.Nombre LIKE '%[[xQuery]]%' ;
+     AND A.ESTATUS<>'D' AND A.ESTATUS<>'I' AND A.INVENTARIO='S' ;
+     ORDER BY 3
+    
+INLINE DESC() strtran(CWDESC,xQuery,'<B>'+xQuery+'</B>')

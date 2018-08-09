@@ -1,0 +1,103 @@
+APERTURA('VENT')
+Busca '0000011'
+quickscope('VEDE',VENT->VENTA)
+HTMLBEGIN
+<div class="container-fluid">
+	<div class="row panel panel-info">
+		<div class="col-md-8">
+			<div class="row panel panel-success">
+				<label class="control-label col-sm-3" for="Cliente">Cliente:</label>
+				<input  class="autocompletar"  type="text" name="Cliente" id="selCliente" size="6" ac-filtro="" value="[[alltrim(Cliente)]]" placeholder="Cliente" required ac-tabla="VEND" ac-forma="" ac-destino="catCliente" ac-controld="Cliente" ac-nuevot="popup" ac-nuevod="Cliente"  >
+				<span class="catadatos" id="catCliente">[[CLIE->NOMBRE]]</span><br>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="row panel panel-default">
+				<div class="col-md-6">
+					<div class="row panel panel-warning">
+						<div class="col-md-6">
+						xxxxx
+						</div>
+						<div class="col-md-6">
+						jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-6">
+						iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+						</div>
+						<div class="col-md-6">
+						jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+						kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+						</div>
+						<div class="col-md-6">
+						lllllllllllllllllllllllllllllllllllllllllllll
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+					<div class="row panel panel-default">
+HTMLEND
+SQL SELECT producto,cantidad,precio,importe from m_vede where venta='[[vent->Venta]]'
+HTMLBEGIN					
+		            </div>
+		</div>
+	</div>
+	<div class="row panel panel-default">
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-md-6">
+				</div>
+				<div class="col-md-6">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="row panel panel-danger">
+				<label class="control-label col-sm-3" for="Nota1">Nota1:</label>
+					<input  class="form-control"  type="text" name="[[NOTA1]]" id="selNOTA1" size="48" value="" placeholder="Observaciones" class="col-sm-4">
+				<label class="control-label col-sm-3" for="Nota2">Nota2:</label>
+					<input  class="form-control"  type="text" name="[[NOTA2]]" id="selNOTA2" size="48" value="" placeholder="Observaciones" class="col-sm-4">
+				<label class="control-label col-sm-3" for="Nota3">Nota3:</label>
+					<input  class="form-control"  type="text" name="[[NOTA3]]" id="selNOTA3" size="48" value="" placeholder="Observaciones" class="col-sm-4">
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-md-6">
+				</div>
+				<div class="col-md-6">
+					<div class="row panel panel-danger">
+						<label class="control-label col-sm-5" for="Suma">Suma:</label>
+							<input type="number" name="SUMA" id="selSUMA" size="19" value="201116.52" Readonly class="col-sm-5"> 
+						<label class="control-label col-sm-5" for="Impuesto">Impuesto:</label>
+							<input type="number" name="IMPUESTO" id="selIMPUESTO" size="19" value="32178.643" Readonly class="col-sm-5"> 
+						<label class="control-label col-sm-5" for="Total">Total:</label>
+							<input type="number" name="TOTAL" id="selTOTAL" size="19" value="233346.49" Readonly class="col-sm-5"> 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+		</div>
+		<div class="col-md-8">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		</div>
+	</div>
+</div>
+HTMLEND

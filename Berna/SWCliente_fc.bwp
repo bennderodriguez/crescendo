@@ -1,0 +1,41 @@
+
+
+Sele C  
+
+Abre('Clie')
+
+
+cForma:='['
+cForma2:='{}]'
+
+*Sele Clie
+While !Eof()
+   cForma+=[{"Cliente" : "]+Trim(Cliente)+[", ]
+   cForma+=["Nombre" : "]+Trim(Nombre)+[", ]
+   cForma+=["Nombre2" : "]+Trim(Nombre2)+[", ]
+   cForma+=["Calle" : "]+Trim(Calle)+[", ]
+   cForma+=["Colonia" : "]+Trim(Colonia)+[", ]
+   cForma+=["CP" : "]+Trim(CP)+[", ]
+   cForma+=["Ciudad" : "]+Trim(Ciudad)+[", ]
+   cForma+=["Clasifica" : "]+Trim(CLASIFICA)+[", ]
+   *cForma+=["DESCUENTO" : "]+Trim(DESCUENTO)+[", ]
+   cForma+=["Tipo" : "]+Trim(Tipo)+[", ]
+   *cForma+=["Dias" : "]+Trim(Dias)+[", ]
+   cForma+=["Contacto" : "]+Trim(Contacto)+[", ]
+   cForma+=["Telefono" : "]+Trim(Telefono)+[", ]
+   cForma+=["Vendedor" : "]+Trim(Vendedor)+[", ]
+   cForma+=["Nacion" : "]+Trim(Nacion)+["}, ]
+   *cForma+=["Saldo" : "]+Trim(Vend->saldo)+[", ]
+   
+   Skip
+EndW
+
+
+
+
+cForma+=cForma2
+
+cPaso:=cForma
+WebSay(cPaso)
+termina
+

@@ -1,0 +1,74 @@
+* CRESWINMAN 17/11/2016 05:02:19
+* Crescendo-ERP 161031L VCW 12.12.12  38054:(0)t
+* Captura de VENT
+* CRESWINMAN 17/11/2016 04:27:06
+* Llamade desde CW:Opera('VENT')
+PARAM lNuevo
+*if !rlok2()
+*, 'Esta en uso por el usuario '+ID
+*	Return .f.
+*endif
+
+* Variables
+PRIVATE oDlgSky
+nCant    :=    0                          && Articulos en la lista para el Footer del Browse
+nSuma    :=    0                          && Importe para el Footer
+nFactorTC:=     if(a->ENDOLARES='S',a->TC,1)
+cTitulo  :=    'VENTAS '+a->(FieldGet(1)) && Titulo de la operacion
+linProds :=    .f.                        && Indicador de edicion de registro de detalle
+lOk      :=    .f.                  && Para no cerrar el Dialogo con Escape o Tachesito, sino hasta que se use "Salir"
+aoGet     :=     {}                         && Arreglo de gets
+aTotales :=     {}                             && Arreglo Dinamico de los Totales de la Operacion
+aReglas   :=     Reglas(alias())            && Reglas de Datos
+I_Resuma  := .f.   && Anula el Recalculo al facturar
+SELE Q
+QUICKSCOPE(,A->(FieldGet(1)))
+
+*** Se Filtra la vista del detalle
+SELE B
+QUICKSCOPE(,A->(FieldGet(1)))
+clie->(dbseek(vent->cliente))                     && Modificable por Operacion
+
+aToTales:=CW:Totales()
+
+
+
+
+*DEFINE DIALOG oDlgSky FROM 0, 0 TO 557*i_Zoom, 989*i_Zoom TITLE cTitDialog PIXEL
+ *  oDlgSky:SetColor(I_RGBFore,I_RGBBack) ;    oDlgSky:SetFont(oFontSky)
+
+
+ *  @   35*i_Zoom/2,  749*i_Zoom/2 TO  172*i_Zoom/2,  978*i_Zoom/2 TITLE ""  OF oDlgSky PIXEL VAR oTO1
+ *  @   35*i_Zoom/2,  5*i_Zoom/2   TO  172*i_Zoom/2,  520*i_Zoom/2 TITLE ""  OF oDlgSky PIXEL VAR oTO2
+ *  @   35*i_Zoom/2,  528*i_Zoom/2 TO  172*i_Zoom/2,  742*i_Zoom/2 TITLE ""  OF oDlgSky PIXEL VAR oTO3
+ *        oTO1:SetColor(i_RGBFore,i_RGBBox)
+ *        oTO2:SetColor(i_RGBFore,i_RGBBox)
+ *        oTO3:SetColor(i_RGBFore,i_RGBBox)
+cForma:='['
+cForma2:=']'
+
+   cForma+=[{"Venta" : "] +Trim(vent->venta  )+[", ]
+   cForma+=[{"Estatus" :  "] +Trim(vent->estatus  )+[", ]
+   cForma+=[{"Cliente" :  "] +Trim(A->CLIENTE  )+[", ]
+   *@   52*i_Zoom,  530*i_Zoom SAY2 "Cliente"                       SIZE   80*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL TRANSPARENT VAR oSay
+   *@   52*i_Zoom,  610*i_Zoom GET A->CLIENTE                      SIZE  110*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL WHEN lWhen("CLIENTE",aReglas) VALID lValid("CLIENTE",aReglas) PICTURE cPict("CLIENTE",aReglas)
+  cForma+=[{"Fecha" :  "] +Trim( A->PEDIDO   )+[", ]
+
+ * @   76*i_Zoom,  752*i_Zoom SAY2 "Fecha"                         SIZE   80*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL TRANSPARENT VAR oSay
+ * @   76*i_Zoom,  860*i_Zoom GET A->PEDIDO                       SIZE  110*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL WHEN lWhen("PEDIDO",aReglas) VALID lValid("PEDIDO",aReglas) PICTURE cPict("PEDIDO",aReglas)
+     cForma+=[{"Sucursal" :  "] +Trim( A->SUCURSAL   )+[", ]
+
+  *@  100*i_Zoom,  752*i_Zoom SAY2 "Sucursal"                      SIZE   80*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL TRANSPARENT VAR oSay
+  * @  100*i_Zoom,  860*i_Zoom GET A->SUCURSAL   VAR oSucursal     SIZE  110*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL WHEN lWhen("SUCURSAL",aReglas) VALID lValid("SUCURSAL",aReglas) PICTURE cPict("SUCURSAL",aReglas)
+  cForma+=[{"Vendedor" :  "] +Trim( vent->VENDEDOR   )+[", ]
+  
+  *@  124*i_Zoom,  752*i_Zoom SAY2 "Vendedor"                      SIZE   80*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL TRANSPARENT VAR oSay
+   *@  124*i_Zoom,  860*i_Zoom GET vent->VENDEDOR  VAR oVendedor   SIZE  110*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL WHEN lWhen("VENDEDOR",aReglas) VALID lValid("VENDEDOR",aReglas) PICTURE cPict("VENDEDOR",aReglas)
+
+   cForma+=[{"Ruta" :  "] +Trim( A->RUTA   )+[",} ]
+   
+   *@  148*i_Zoom,  860*i_Zoom SAY2 "Ruta"                         SIZE   40*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL TRANSPARENT VAR oSay
+ *  @  148*i_Zoom,  900*i_Zoom GET A->RUTA        VAR oRutaE       SIZE   40*i_Zoom,   20*i_Zoom OF oDlgSky PIXEL WHEN DEC$'AC' VALID ELIGEDE('RUTA','A->RUTA')
+ cForma+=cForma2
+ cPaso:=cForma
+ WebSay(cPaso)

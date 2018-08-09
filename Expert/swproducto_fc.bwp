@@ -1,0 +1,192 @@
+cVenta2:=M->Pedido
+Abre('VENT')
+Busca M->Pedido
+If !Found()
+   MENSAJITO 'El pedido ya no se encuentra en el archivo'
+EndIF
+cierra
+DEFAULT conmenu := .t.
+Sele E
+If !Abre('Marc')
+   Return
+Endif
+Sele C
+If !Abre('Clie')
+   Return
+Endif
+busca cClienteV
+Sele D
+If !Abre('Prod')
+   Return
+Endif
+Set Rela to marca into e
+SELE A
+If !Abre('VENT')
+   Return
+Endif
+Sele B
+If !Abre('Vede')
+   Return
+Endif
+sele a
+relaciona cliente con c
+busca cVenta2
+IF estatus='X' .AND.  cClienteV#'GUEST'
+   Cambia Cliente x cClienteV
+   Sele B
+   Busca a->Venta
+   While venta=a->Venta .AND. !eof()
+      Cambia Cliente x cClienteV
+      salta
+   Endw
+ENDIF
+Sele b
+RELACIONA PRODUCTO CON D
+ORDEN 1
+nCant    :=    0                          && Articulos en la lista para el Footer del Browse
+nSuma    :=    0                          && Importe para el Footer
+aTotales :=     {}                             && Arreglo Dinamico de los Totales de la Operacion
+aToTales:=CW:Totales()
+
+cForma:='['
+cForma2:=']'
+cSuma:=0 ;cimpuesto:=0;L_Cant:=0
+Seek cVenta2
+*INLINE IMAGEN() cFoto:='\imagenes\datos\prod\'+strtran(alltrim(Prod->(Fieldget(1))),'/','')+'.jpg',;
+                If(file('Website'+cFoto),'<img src="'+strtran(cFoto,'\','/')+'" width="55" align="center" '+;
+                  [ >],'')
+*[ onclick="Tip('<img src=]+strtran(cFoto,'\','/')+[')"]
+While Venta=cVenta2 .and. !Eof()
+   cForma+=[{"Producto" : "]+Trim(D->Producto)+[", ]
+   *cForma+=[<td>]+cw:Imagen()+[</td>]
+   cForma+=["Descripcion" : "]
+   cForma+=&I_I_Desc1
+   cForma+=[", ]
+   IF SAYGET='SAY'
+      cForma+=["Cantidad" : "]+Trans(Cantidad,I_PicP)+[", ]
+   ELSE
+       cCant:=AllTrim(StrTran(Trans(vede->Cantidad/if(U_Caja>1,U_Caja,1),I_PicP),',',''))
+       cForma+=["Cantidad" : "]+cCant;
+       if(u_caja>1,'X '+str(U_Caja),'')+[", ]
+   ENDIF
+   cForma+=["Precio" : "]+Trans(Precio,I_Pic1)+[", ]
+   cForma+=["Porcentaje" : "]+Trans(DESCUENTO,I_Pic1)+[", ]
+  
+   cForma+=["Importe" : "]+Trans(Cantidad*Precio,I_Pic1)+[",]
+   
+   cSuma:=cSuma+Cantidad*Precio
+   cimpuesto:=cImpuesto+Cantidad*Precio*(d->Impuesto/100)
+  
+   cForma+=["Neto" : "]+Trans(ImportNeto,I_pic2)+["},]
+   L_Cant:=L_Cant+Cantidad
+   Skip
+EndW
+
+
+cForma3:='{"Total" : { '
+
+cForma3+=["TCantidad" : "]+Trans(nCant,'999,999,999')+[",]
+cForma3+=["TImporte" : "]+Trans(nSuma,i_pic2)+[",]
+cForma3+=["TNeto" : "]+Trans(vent->suma,i_pic2)+["]
+cForma3+= '}}'
+
+cForma+=cForma3+cForma2
+
+Sele C
+Seek a->Cliente
+cLetras:=Letras(cSuma+cImpuesto)
+deta:=cForma
+ntotal:=csuma+cimpuesto
+nsuma:=csuma
+nimpuesto:=cimpuesto
+ctotal:=trans(csuma+cImpuesto,i_pic2)
+csuma:=trans(csuma,i_pic2)
+cimpuesto:=Trans(cimpuesto,i_pic2)
+sele a
+IF a->Estatus='X'
+  rlok()
+  Replace suma with nsuma impuesto with nimpuesto total with ntotal
+ENDIF
+Seek cVenta2
+IF a->Estatus='X'
+   MenuCar:='<input type="submit" value="Enviar" name="proceso">'+ ;
+             if(SAYGET="GET",;
+               [<input type="submit" value="Actualizar" name="proceso">],;
+               [<input type="submit" value="Modificar" name="proceso">])+ ;
+      '<input type="submit" value="Eliminar" name="proceso">'
+ELSE
+   MenuCar:=''
+ENDIF
+*Corre(G_CGI+Web_Dir+'Flete.bwp',no)
+*FORMA cgi-bwp\expert\Carrito.HTM
+cPaso:=cForma
+*Cformap:=cForma+=cForma2
+*SUBSTR(Cformap, -2, 2)
+WebSay(cPaso)
+termina
+
+
+FUNCTION TOTALES()
+if lInProds
+   Regresa aTotales
+Endif
+SysRefresh()
+  PRIVATE XX,aTot
+  nSuma:=0
+  *b->(dbgotop())
+  Quickscope('VEDE',a->Venta)
+  nCant:=0
+  b->(dbeval({|| nSuma:=nSuma+B->Importe,nCant:=nCant+B->Cantidad}))
+  XX:=nSuma
+  aTot:={}
+  IF(a->Suma#a->Total,aAdd(aTot,{"SUMA","",Trans(XX,i_pic2)}),)
+  IF(a->DESC_PPP1#0 ,aAdd(aTot,{'Desc. PPP1',trans(a->Desc_ppp1,'999.99%'),Trans(xx*(A->Desc_ppp1/100)/nFactorTC,i_pic2)}),)
+  IF(a->Descuento1>0,aAdd(aTot,{"Desc. 1","",Trans(A->Descuento1/nFactorTC,i_pic2)}),)
+     XX:=XX-(XX*(A->DESC_PPP1/100))-A->DESCUENTO1/nFactorTC
+  IF(a->DESC_PPP2#0 ,aAdd(aTot,{'Desc.PPP2',trans(a->Desc_ppp2,'999.99%'),Trans(XX*(a->Desc_ppp2/100)/nFactorTC,i_pic2)}),)
+  IF(a->Descuento2>0,aAdd(aTot,{"Desc. 2","",Trans(A->Descuento2/nFactorTC,i_pic2)}),)
+     XX:=XX-(XX*(A->DESC_PPP2/100))-A->DESCUENTO2
+  IF(a->DESC_PPP3#0 ,aAdd(aTot,{'Desc. PPP3',trans(a->Desc_ppp3,'999.99%'),Trans(xx*(a->Desc_ppp3/100)/nFactorTC,i_pic2)}),)
+  IF(a->Descuento3>0,aAdd(aTot,{"Desc. 3","",Trans(A->Descuento3/nFactorTC,i_pic2)}),)
+     XX:=XX-(XX*(A->DESC_PPP3/100))-A->DESCUENTO3
+  if dec$'AC'.and.!a->Estatus$'FRC'
+     a->Suma:=xx
+  endif
+  IF(A->(Descuento1+descuento2+descuento3+desc_ppp1+desc_ppp2+desc_ppp3)>0,aAdd(aTot,{"Subtotal   ","",Trans(a->Suma/nFactorTC,i_pic2)}),)
+  nFactor:=if(nSuma#0,XX/nSuma,0)
+  nIva:=0;  nIEPS:=0 ;   nIEPS2:=0
+  if dec$'AC'.and.!a->Estatus$'FRC'
+     B->(dbEval({|| rlok(),B->ImportNeto:=B->Importe*nFactor,nIva:=nIva+B->ImportNeto*(G->impuesto/100),nIEPS:=nIEPS+B->ImportNeto*(G->impuesto2/100),nIEPS2:=nIEPS2+B->ImportNeto*(G->impuesto3/100)}))
+  else
+     B->(dbEval({|| nIva:=nIva+B->ImportNeto*(G->impuesto/100),nIEPS:=nIEPS+B->ImportNeto*(G->impuesto2/100),nIEPS2:=nIEPS2+B->ImportNeto*(G->impuesto3/100)}))
+  endif
+  if clie->NACION#'MEX'.and.DEC$'AC'.and.!a->Estatus$'FRC'
+     A->Impuesto:=0
+     a->Impuesto2:=0
+     a->Impuesto3:=0
+     a->Retencion1:=0
+     a->Retencion2:=0
+  endif
+  if dec$'AC'.and.clie->Nacion='MEX'.and.!a->Estatus$'FRC'
+     A->Impuesto:=nIVA
+     a->Impuesto2:=nIEPS
+     a->Impuesto3:=nIEPS2
+  endif
+  IF(A->Impuesto>0,  aAdd(aTot,{"I.V.A.     ","",Trans(A->Impuesto,i_pic2)}),)
+  IF(A->IMPUESTO2>0, aAdd(aTot,{"I.E.P.S.   ","",Trans(A->Impuesto2,i_pic2)}),)
+  IF(A->IMPUESTO3>0,aAdd(aTot,{"I.E.P.S.2  ","",Trans(A->Impuesto3,i_pic2)}),)
+  IF dec$'AC' .and. c->RETENCION .and.clie->NACION='MEX'.and.!a->Estatus$'FRC'
+     A->retencion1:=a->impuesto*(2/3)
+     A->RETENCION2:=xx*0.10
+  ENDIF
+  if dec$'AC'.and.!a->Estatus$'FRC'
+      A->TOTAL:=XX+A->(IMPUESTO+Impuesto2+impuesto3-RETENCION1-RETENCION2)
+  endif
+  IF(A->(Retencion1+Retencion2)>0,aAdd(aTot,{"Subtotal   ","",Trans(A->(Suma+Impuesto+Impuesto2+Impuesto3)/nFactorTC,i_pic2)}),)
+  IF(A->Retencion1>0,aAdd(aTot,{"Ret. IVA   ","",Trans(A->Retencion1/nFactorTC,i_pic2)}),)
+  IF(A->Retencion2>0,aAdd(aTot,{"Ret. ISR   ","",Trans(A->Retencion2/nFactorTC,i_pic2)}),)
+  aAdd(aTot,{"TOTAL","",Trans(vent->Total/nFactorTC,i_pic2)})
+  if(A->saldo#0,aAdd(aTot,{"Saldo","",Trans(a->Saldo/nFactorTC,i_pic2)}),)
+  Regresa (aTot)
+Termina TOTALES
+

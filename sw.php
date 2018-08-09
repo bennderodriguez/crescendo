@@ -7,7 +7,15 @@
 <body>
 
 <p id="demo"></p>
+<?php
 
+// NAME
+if (empty($_GET["venta"])) {
+    $venta = '*';
+} else {
+    $venta = $_GET["venta"];
+}
+?>
 <script>
 $(document).ready(function(){
   var xhttp = new XMLHttpRequest();
@@ -22,7 +30,7 @@ $(document).ready(function(){
       document.getElementById("demo").innerHTML = "Cargando Contenido...";
 	}
   };
-  xhttp.open("GET", "http://focus.acceso.crescloud.com/cgi-bwp/expert/Check3.bwp?cVenta2=0051915", true);
+  xhttp.open("GET", "http://focus.acceso.crescloud.com/cgi-bwp/expert/Check3.bwp?cVenta2=<?php echo $venta ?>", true);
   xhttp.send();
 });
 </script>

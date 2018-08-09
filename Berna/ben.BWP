@@ -1,0 +1,17 @@
+cForma:='holas'
+DEFAULT nCant := '1'
+WebSay(cForma + nCant)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+DEFAULT cCampos := '#'
+DEFAULT cTabla := 'VEND'
+DEFAULT cWhere := ''
+SI cCampos='#'
+   MENSAJITO 'No hay parametros'
+ELSE
+  SQL SELECT [[ccampos]] FROM M_[[cTabla]] [[cWhere] /*CURSOR*/
+  /*WEBREPORT 'DEFAULT.REP' HEADER "BI2\FORMAS\HEADFULL.HTM" */
+FINSI  
+TERMINA
+

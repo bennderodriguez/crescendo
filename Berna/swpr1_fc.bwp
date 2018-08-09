@@ -1,0 +1,23 @@
+Sele D  
+Abre('Prod')
+
+cForma:='['
+cForma2:='{}]'
+
+*Sele Clie
+While !Eof()
+   cForma+=[{"Producto" : "]+Trim(PROD->Producto)+[", ]
+   cForma+=["Desc1" : "]+Trim(PROD->Desc1)+[", ]
+   *cForma+=["Exis0" : "]+Trim(PROD->EXIS0)+[", ]
+   *cForma+=["Precio1" : "]+Trim(PROD->Precio1)+[", ]
+   cForma+=["Moneda" : "]+Trim(PROD->Moneda)+["}, ]
+   
+   Skip
+EndW
+
+cForma+=cForma2
+
+cPaso:=cForma
+WebSay(cPaso)
+termina
+

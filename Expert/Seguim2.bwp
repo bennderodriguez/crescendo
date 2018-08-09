@@ -1,0 +1,111 @@
+cVenta2:=M->Pedido
+Abre('VENT')
+Busca M->Pedido
+If !Found()
+   MENSAJITO 'El pedido ya no se encuentra en el archivo'
+EndIF
+cierra
+DEFAULT conmenu := .t.
+Sele E
+If !Abre('Marc')
+   Return
+Endif
+Sele C
+If !Abre('Clie')
+   Return
+Endif
+busca cClienteV
+Sele D
+If !Abre('Prod')
+   Return
+Endif
+Set Rela to marca into e
+SELE A
+If !Abre('VENT')
+   Return
+Endif
+Sele B
+If !Abre('Vede')
+   Return
+Endif
+sele a
+relaciona cliente con c
+busca cVenta2
+IF estatus='X' .AND.  cClienteV#'GUEST'
+   Cambia Cliente x cClienteV
+   Sele B
+   Busca a->Venta
+   While venta=a->Venta .AND. !eof()
+      Cambia Cliente x cClienteV
+      salta
+   Endw
+ENDIF
+Sele b
+RELACIONA PRODUCTO CON D
+ORDEN 1
+cForma:='<tr>'
+cSuma:=0 ;cimpuesto:=0;L_Cant:=0
+Seek cVenta2
+INLINE IMAGEN() cFoto:='\imagenes\datos\prod\'+strtran(alltrim(Prod->(Fieldget(1))),'/','')+'.jpg',;
+                If(file('Website'+cFoto),'<img src="'+strtran(cFoto,'\','/')+'" width="55" align="center" '+;
+                  [ >],'')
+*[ onclick="Tip('<img src=]+strtran(cFoto,'\','/')+[')"]
+While Venta=cVenta2 .and. !Eof()
+   cForma+=[<td><font size="1" face="Verdana">]+Trim(D->Producto)+[</td>]
+   cForma+=[<td>]+cw:Imagen()+[</td>]
+   cForma+=[<td><font size="1" face="Verdana">]
+   cForma+=&I_I_Desc1
+   cForma+=[</td>]
+   IF SAYGET='SAY'
+      cForma+=[<td align="right"><font size="1" face="Verdana">]+Trans(Cantidad,I_PicP)+[</td>]
+   ELSE
+       cCant:=AllTrim(StrTran(Trans(vede->Cantidad/if(U_Caja>1,U_Caja,1),I_PicP),',',''))
+       cForma+=[ <td align="right" ><input type="text" name="KOD]+Trim(D->Producto)+[" value="]+cCant+[">]+;
+       if(u_caja>1,'X '+str(U_Caja),'')+[</td>]
+   ENDIF
+   cForma+=[<td align="right"><font size="1" face="Verdana">]+Trans(Precio,I_Pic1)+[</td>]
+   cForma+=[<td align="right"><font size="1" face="Verdana">]+Trans(Cantidad*Precio,I_Pic1)+[</td></tr>]
+   cSuma:=cSuma+Cantidad*Precio
+   cimpuesto:=cImpuesto+Cantidad*Precio*(d->Impuesto/100)
+   L_Cant:=L_Cant+Cantidad
+   Skip
+EndW
+
+
+
+
+Sele C
+Seek a->Cliente
+cLetras:=Letras(cSuma+cImpuesto)
+deta:=cForma
+ntotal:=csuma+cimpuesto
+nsuma:=csuma
+nimpuesto:=cimpuesto
+ctotal:=trans(csuma+cImpuesto,i_pic2)
+csuma:=trans(csuma,i_pic2)
+cimpuesto:=Trans(cimpuesto,i_pic2)
+sele a
+IF a->Estatus='X'
+  rlok()
+  Replace suma with nsuma impuesto with nimpuesto total with ntotal
+ENDIF
+Seek cVenta2
+IF a->Estatus='X'
+   MenuCar:='<input type="submit" value="Enviar" name="proceso">'+ ;
+             if(SAYGET="GET",;
+               [<input type="submit" value="Actualizar" name="proceso">],;
+               [<input type="submit" value="Modificar" name="proceso">])+ ;
+      '<input type="submit" value="Eliminar" name="proceso">'
+ELSE
+   MenuCar:=''
+ENDIF
+Corre(G_CGI+Web_Dir+'Flete.bwp',no)
+*FORMA cgi-bwp\expert\Carrito.HTM
+cPaso:=cForma
+WebSay(cPaso)
+WebSay("cgi:" + G_CGI + "dir:" + Web_Dir) 
+WebEnd()
+
+termina
+
+

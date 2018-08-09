@@ -1,0 +1,22 @@
+*cVenta2:=substr(cMimeDec(Jikamase),9)
+DEFAULT cVenta2 := '000000'
+DEFAULT cVenta1 := '000000'
+
+Abre('VENT')
+Busca cVenta2
+lMenu:=VENT->Estatus='X'
+IF Eof()
+   MENSAJITO 'No hay pedido abierto'
+ELSE
+   m->Pedido:=cVenta2
+   Corre('cgi-bwp\BI2\Menu\FocusLab\Berna\swproducto_fc.bwp')
+ENDIF
+
+
+
+
+
+
+
+
+
